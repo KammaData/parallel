@@ -11,9 +11,8 @@ use Amp\TimeoutException;
 use function Amp\asyncCall;
 use function Amp\call;
 
-class ProcessHub
-{
-    const PROCESS_START_TIMEOUT = 5000;
+class ProcessHub {
+    const PROCESS_START_TIMEOUT = 50000;
     const KEY_RECEIVE_TIMEOUT = 1000;
 
     /** @var resource|null */
@@ -34,8 +33,7 @@ class ProcessHub
     /** @var string|null */
     private $toUnlink;
 
-    public function __construct()
-    {
+    public function __construct() {
         $isWindows = \strncasecmp(\PHP_OS, "WIN", 3) === 0;
 
         if ($isWindows) {
@@ -104,8 +102,7 @@ class ProcessHub
         Loop::disable($this->watcher);
     }
 
-    public function __destruct()
-    {
+    public function __destruct() {
         Loop::cancel($this->watcher);
         \fclose($this->server);
         if ($this->toUnlink !== null) {
@@ -113,20 +110,17 @@ class ProcessHub
         }
     }
 
-    public function getUri(): string
-    {
+    public function getUri(): string {
         return $this->uri;
     }
 
-    public function generateKey(int $pid, int $length): string
-    {
+    public function generateKey(int $pid, int $length): string {
         $key = \random_bytes($length);
         $this->keys[$key] = $pid;
         return $key;
     }
 
-    public function accept(int $pid): Promise
-    {
+    public function accept(int $pid): Promise {
         return call(function () use ($pid): \Generator {
             $this->acceptor[$pid] = new Deferred;
 
